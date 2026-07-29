@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omnibrain"
+version = "0.1.0"
+description = "OmniBrain AI/ML modules including VLM extraction, Vision Agent, and Self-RAG"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pymupdf>=1.24.0",
+    "langgraph>=0.1.4",
+    "langchain>=0.2.0",
+    "langchain-core>=0.2.0",
+    "langchain-community>=0.2.0",
+    "langchain-openai>=0.1.0",
+    "langchain-google-genai>=1.0.0",
+    "pydantic>=2.0.0",
+    "pillow>=10.0.0",
+    "requests>=2.31.0",
+]
+
+[tool.setuptools]
+py-modules = ["config", "vision_vlm", "retriever", "self_rag", "test_vlm", "run"]

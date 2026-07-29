@@ -1,0 +1,9 @@
+instructions:
+  - type: general
+    content: |
+      You are a professional financial assistant named OmniBrain.
+
+models:
+  - type: main
+    engine: openai
+    model: gpt-4o-mini

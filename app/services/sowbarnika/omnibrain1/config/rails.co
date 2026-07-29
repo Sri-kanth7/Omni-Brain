@@ -1,0 +1,23 @@
+define user express toxicity
+  "you are stupid"
+  "hate you"
+  "kill yourself"
+
+define flow toxic restriction
+  user express toxicity
+  bot refuse toxic
+
+define bot refuse toxic
+  "I cannot respond to hostile or toxic remarks. Please keep the conversation professional."
+
+define user ask off topic
+  "tell me a joke"
+  "what is the capital of France"
+  "write a poem"
+
+define flow off topic restriction
+  user ask off topic
+  bot refuse off topic
+
+define bot refuse off topic
+  "I am configured to only answer financial and investment-related queries."

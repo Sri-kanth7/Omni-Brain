@@ -5,7 +5,7 @@ python-multipart==0.0.12
 
 # LangChain & LangGraph
 langchain==0.3.0
-langchain-google-genai==1.0.8
+langchain-google-genai==2.0.10
 langgraph==0.2.0
 
 # Vector Store & Embeddings

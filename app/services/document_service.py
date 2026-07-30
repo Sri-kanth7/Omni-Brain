@@ -126,11 +126,13 @@ class DocumentService:
         for i, chunk in enumerate(chunks):
             cid = f"{document_id}_chunk_{i:06d}"
             chunk_ids.append(cid)
+
             metadatas.append({
                 "document_id": document_id,
                 "filename": filename,
                 "chunk_index": i,
-                "page_numbers": chunk["page_numbers"],
+                # ChromaDB does not support list values in metadata
+                "page_numbers": ",".join(map(str, chunk["page_numbers"])),
                 "char_count": chunk["char_count"],
             })
 

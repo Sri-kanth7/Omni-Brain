@@ -305,20 +305,32 @@ class OmniBrainAPI:
 
     # ── Upload ──────────────────────────────────────────────────────
 
-    def upload(self, file_path: str, filename: str) -> Optional[dict[str, Any]]:
+    def upload(self, file_bytes: bytes, filename: str) -> Optional[dict[str, Any]]:
+        """Upload PDF directly from memory."""
+  
         try:
-            with open(file_path, "rb") as f:
-                resp = self._request(
-                    "POST",
-                    "/upload",
-                    files={"file": (filename, f, "application/pdf")},
-                )
+            resp = self._request(
+                "POST",
+                "/upload",
+                files={
+                    "file": (
+                        filename,
+                        file_bytes,
+                        "application/pdf",
+                    )
+                },
+            )
+    
             if resp.status_code == 200:
                 return resp.json()
-            return {"error": resp.json().get("detail", resp.text)}
+    
+            try:
+                return {"error": resp.json().get("detail", resp.text)}
+            except Exception:
+                return {"error": resp.text}
+    
         except requests.RequestException as exc:
             return {"error": str(exc)}
-
     # ── Chat ────────────────────────────────────────────────────────
 
     def chat(
@@ -584,32 +596,22 @@ def render_upload_tab() -> None:
 
         # Save to a temp location and upload
         if st.button("🚀 Upload & Process", type="primary", use_container_width=True):
+
             if not st.session_state.connected or not st.session_state.api:
                 st.error("❌ Please connect to the backend first.")
                 return
-
-            # Save uploaded file temporarily
-            temp_dir = Path("/tmp/omnibrain_uploads")
-            temp_dir.mkdir(parents=True, exist_ok=True)
-            temp_path = temp_dir / uploaded_file.name
-
-            with open(temp_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-
+        
             with st.spinner("🔄 Processing document... This may take a moment."):
+        
                 st.session_state.processing = True
+        
                 result = st.session_state.api.upload(
-                    str(temp_path), uploaded_file.name
+                    uploaded_file.getvalue(),
+                    uploaded_file.name,
                 )
-
-                # Clean up temp file
-                try:
-                    temp_path.unlink()
-                except OSError:
-                    pass
-
+        
                 st.session_state.processing = False
-
+        
                 if result and "error" not in result:
                     st.session_state.upload_result = result
                     st.balloons()

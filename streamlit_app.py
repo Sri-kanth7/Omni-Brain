@@ -26,7 +26,7 @@ import streamlit as st
 # ═══════════════════════════════════════════════════════════════════
 
 # Default backend URL — can be overridden via environment variable or sidebar
-DEFAULT_API_URL = "http://localhost:8000"
+DEFAULT_API_URL = "https://omni-brain-production.up.railway.app"
 API_PREFIX = "/api/v1"
 
 # Set page config must be the first Streamlit command

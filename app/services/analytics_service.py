@@ -115,29 +115,52 @@ class AnalyticsService:
 
     def get_document(self, document_id: str) -> Optional[dict[str, Any]]:
         """Retrieve metadata for a specific document."""
-        return self._documents.get(document_id)
+
+        file_path = Path(settings.REPORTS_DIR) / f"{document_id}.json"
+
+        if not file_path.exists():
+            return None
+
+        try:
+            with open(file_path, "r") as f:
+                return json.load(f)
+        except Exception as exc:
+            logger.error(f"Failed to load document {document_id}: {exc}")
+            return None
 
     def get_all_documents(self) -> list[dict[str, Any]]:
-        """Return metadata for all registered documents, newest first."""
-        docs = list(self._documents.values())
+        """Return all persisted documents from the reports directory."""
+        reports_dir = Path(settings.REPORTS_DIR)
+
+        if not reports_dir.exists():
+            return []
+
+        docs = []
+
+        for file in reports_dir.glob("*.json"):
+            try:
+                with open(file, "r") as f:
+                    docs.append(json.load(f))
+            except Exception as exc:
+                logger.error(f"Failed to load {file}: {exc}")
+
         docs.sort(key=lambda d: d.get("created_at", ""), reverse=True)
         return docs
 
     def remove_document(self, document_id: str) -> bool:
-        """
-        Remove a document from the registry.
+        """Remove document metadata from disk."""
 
-        Args:
-            document_id: Document to remove.
+        file_path = Path(settings.REPORTS_DIR) / f"{document_id}.json"
 
-        Returns:
-            True if removed, False if not found.
-        """
-        if document_id in self._documents:
-            del self._documents[document_id]
-            logger.info(f"Document removed from registry: {document_id}")
-            return True
-        logger.warning(f"Document not found in registry: {document_id}")
+        if file_path.exists():
+            try:
+                file_path.unlink()
+                logger.info(f"Document removed: {document_id}")
+                return True
+            except Exception as exc:
+                logger.error(f"Failed to remove document {document_id}: {exc}")
+
+        logger.warning(f"Document not found: {document_id}")
         return False
 
     def _persist_metadata(self, document_id: str, metadata: dict[str, Any]) -> None:
@@ -160,7 +183,7 @@ class AnalyticsService:
         Returns:
             A dict with overall dataset analytics.
         """
-        docs = list(self._documents.values())
+        docs = self.get_all_documents()
         if not docs:
             return {
                 "total_documents": 0,

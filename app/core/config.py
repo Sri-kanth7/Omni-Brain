@@ -34,7 +34,7 @@ class Settings:
 
     # ── Google Gemini ────────────────────────────────────────────────
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = "gemini-2.0-flash-exp"
+    GEMINI_MODEL: str = "GEMINI_MODEL=gemini-1.5-flash"
     GEMINI_TEMPERATURE: float = 0.2
     GEMINI_MAX_TOKENS: int = 4096
 
